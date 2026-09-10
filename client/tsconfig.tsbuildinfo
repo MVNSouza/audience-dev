@@ -1,1 +1,1 @@
-{"root":["./src/App.tsx","./src/env.d.ts","./src/main.tsx","./src/components/Layout.tsx","./src/lib/api.ts","./src/pages/CreateSession.tsx","./src/pages/Home.tsx","./src/pages/Manage.tsx","./src/pages/Vote.tsx"],"version":"5.9.3"}
+{"root":["./src/App.tsx","./src/env.d.ts","./src/main.tsx","./src/components/Layout.tsx","./src/lib/api.ts","./src/pages/CreateSession.tsx","./src/pages/Home.tsx","./src/pages/Manage.tsx","./src/pages/Vote.tsx","./src/types/qrcode.d.ts"],"version":"5.9.3"}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import QRCode from 'qrcode';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { api, Session } from '../lib/api';
 export default function Manage() {
@@ -9,13 +9,22 @@ export default function Manage() {
   const [session, setSession] = useState<Session>();
   const [results, setResults] = useState<any>();
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
   async function load() {
+    setLoading(true);
+    console.debug('Manage.load start', { code, token });
     try {
       const [s, r] = await Promise.all([api.getSession(code), api.getResults(code, token)]);
+      console.debug('Manage.load response', { s, r });
       setSession(s.session);
       setResults(r.results);
+      setError('');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Falha ao carregar sessão.');
+      const msg = e instanceof Error ? e.message : 'Falha ao carregar sessão.';
+      console.error('Manage.load error', e);
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
   }
   useEffect(() => {
@@ -27,8 +36,26 @@ export default function Manage() {
     setSession(r.session);
   }
   const voteUrl = `${window.location.origin}/vote/${code}`;
+  const [qrSrc, setQrSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    if (!voteUrl) return;
+    setQrSrc(null);
+    QRCode.toDataURL(voteUrl, { margin: 1, width: 300 })
+      .then((url: string) => {
+        if (mounted) setQrSrc(url);
+      })
+      .catch((e: unknown) => {
+        console.error('QR generation failed', e);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [voteUrl]);
   return (
     <section className="page">
+      {loading && <div className="muted">Carregando...</div>}
       <div className="manage-head">
         <div>
           <span className="eyebrow">Painel do professor</span>
@@ -44,14 +71,23 @@ export default function Manage() {
         )}
       </div>
       {error && <div className="error">{error}</div>}
+      {!loading && !session && !error && <div className="muted">Sessão não encontrada.</div>}
       <div className="dashboard-grid">
         <div className="card qr-card">
           <h2>QR Code</h2>
           <div className="qr-wrap">
-            {(() => {
-              const QR: any = QRCodeSVG;
-              return <QR value={voteUrl} size={250} includeMargin />;
-            })()}
+            {typeof window !== 'undefined' ? (
+              <>
+                {/* QR image generated from data URL */}
+                {/** show img when ready */}
+                {/** qrSrc state generated below */}
+                {qrSrc ? (
+                  <img src={qrSrc} alt="QR Code" width={250} height={250} />
+                ) : (
+                  <div className="muted">Gerando QR...</div>
+                )}
+              </>
+            ) : null}
           </div>
           <p className="muted">Aponte a câmera do celular para abrir a avaliação.</p>
           <code>{voteUrl}</code>
