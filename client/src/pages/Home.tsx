@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 export default function Home() {
   const [c, setC] = useState('');
   const nav = useNavigate();
@@ -17,9 +17,9 @@ export default function Home() {
           respondam pelo celular, usando um QR Code.
         </p>
         <div className="hero-actions">
-          <a className="button primary" href="/create">
+          <Link className="button primary" to="/create">
             Criar sessão
-          </a>
+          </Link>
           <label className="join-box">
             <input
               value={c}
