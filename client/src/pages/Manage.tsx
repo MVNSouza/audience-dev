@@ -48,7 +48,10 @@ export default function Manage() {
         <div className="card qr-card">
           <h2>QR Code</h2>
           <div className="qr-wrap">
-            <QRCodeSVG value={voteUrl} size={250} includeMargin />
+            {(() => {
+              const QR: any = QRCodeSVG;
+              return <QR value={voteUrl} size={250} includeMargin />;
+            })()}
           </div>
           <p className="muted">Aponte a câmera do celular para abrir a avaliação.</p>
           <code>{voteUrl}</code>
