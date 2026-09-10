@@ -1,0 +1,57 @@
+{
+  "name": "Audience",
+  "purpose": "Avaliação anônima de apresentações acadêmicas",
+  "stack": {
+    "frontend": "React + Vite + TypeScript",
+    "backend": "Node.js + Express",
+    "database": "SQLite + better-sqlite3"
+  },
+  "product_rules": [
+    "sem login obrigatório",
+    "avaliações anônimas",
+    "sessões expiram em 7 dias",
+    "não prometer identificação permanente de dispositivo"
+  ],
+  "scales": ["stars_1_5", "number_0_10", "tomatoes_1_5", "gamified_1_5"],
+  "frontend_routes": ["/", "/create", "/vote/:code", "/manage/:code?token=..."],
+  "api_routes": [
+    "GET /api/health",
+    "POST /api/sessions",
+    "GET /api/sessions/:code",
+    "POST /api/sessions/:code/evaluations",
+    "POST /api/sessions/:code/close",
+    "GET /api/sessions/:code/results"
+  ],
+  "duplicate_control": "UUID aleatório do navegador + SHA-256 server-side + UNIQUE(session_id,voter_hash)",
+  "visual": { "theme": "dark minimal", "gradient": ["#FF7300", "#C71787"] },
+  "implemented": [
+    "session creation",
+    "QR code",
+    "anonymous voting",
+    "duplicate prevention",
+    "results",
+    "manual close",
+    "7-day expiration",
+    "cleanup",
+    "AI context"
+  ],
+  "pending": [
+    "login",
+    "PostgreSQL",
+    "realtime",
+    "CSV/PDF export",
+    "saved templates",
+    "institutional dashboard",
+    "PWA",
+    "robust teacher authentication"
+  ],
+  "ai_rules": [
+    "preserve React + Express",
+    "avoid unnecessary dependencies",
+    "no login without explicit request",
+    "business logic in server/src/services",
+    "REST endpoints in server/src/routes",
+    "UI in client/src/pages and components",
+    "be precise about privacy limitations"
+  ]
+}
