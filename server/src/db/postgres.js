@@ -71,8 +71,28 @@ export async function initSchema() {
   `);
 }
 
-// initialize schema on import
-initSchema().catch((e) => {
-  console.error('Failed to initialize Postgres schema', e);
-  process.exit(1);
+// initialize schema on import with retries; don't crash the process on first failure
+async function initWithRetry(attempts = 5, delayMs = 1000) {
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      await initSchema();
+      console.log('Postgres schema initialized');
+      return;
+    } catch (e) {
+      console.error(`Attempt ${i} to initialize Postgres schema failed:`, e.message || e);
+      if (i === attempts) {
+        console.error(
+          'All attempts to initialize Postgres schema failed — continuing without schema initialization.'
+        );
+        return;
+      }
+      await new Promise((r) => setTimeout(r, delayMs * i));
+    }
+  }
+}
+
+export const ready = initWithRetry();
+
+ready.catch((e) => {
+  console.error('Unexpected error during Postgres init retry', e);
 });

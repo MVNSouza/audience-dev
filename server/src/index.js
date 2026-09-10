@@ -7,6 +7,7 @@ import sessions from './routes/sessions.js';
 import evaluations from './routes/evaluations.js';
 import { cleanupExpiredSessions } from './middleware/cleanup.js';
 import './db/postgres.js';
+import { ready as dbReady } from './db/postgres.js';
 
 const app = express(),
   port = Number(process.env.PORT ?? 3333),
@@ -23,6 +24,9 @@ app.use((e, _q, res, _n) => {
   console.error(e);
   res.status(500).json({ message: 'Erro interno do servidor.' });
 });
+
+// wait for DB initialization (with retries) before running cleanup and starting listen
+await dbReady;
 cleanupExpiredSessions();
 setInterval(cleanupExpiredSessions, 3600000);
 app.listen(port, () => console.log(`Audience API: http://localhost:${port}`));
